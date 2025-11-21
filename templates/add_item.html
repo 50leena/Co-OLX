@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>List a New Item</h1>
+            <p>Fill in the details below to list your item for sale</p>
+        </div>
+
+        <form method="POST" class="item-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="title">Item Title *</label>
+                    <input type="text" id="title" name="title" placeholder="e.g., Calculus Textbook, MacBook Pro, Bicycle" required maxlength="100">
+                    <div class="form-help">Be specific and descriptive</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="books">📚 Books & Textbooks</option>
+                        <option value="electronics">💻 Electronics</option>
+                        <option value="furniture">🛋️ Furniture</option>
+                        <option value="clothing">👕 Clothing & Accessories</option>
+                        <option value="sports">⚽ Sports Equipment</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Price (Rs.) *</label>
+                    <div class="price-input">
+                        <span class="currency">Rs. </span>
+                        <input type="number" id="price" name="price" placeholder=" 0.00" step="0.02" min="0" required>
+                    </div>
+                    <div class="form-help">Set a fair student-friendly price</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" name="description" placeholder="Describe your item's condition, features, specifications, and any relevant details. Be honest and thorough to attract serious buyers." rows="6" required maxlength="500"></textarea>
+                <div class="form-meta">
+                    <span class="char-count">0/500 characters</span>
+                </div>
+            </div>
+
+            <div class="form-tips">
+                <h4>📝 Listing Tips</h4>
+                <ul>
+                    <li>Be honest about the item's condition</li>
+                    <li>Include clear, specific details</li>
+                    <li>Mention any flaws or wear</li>
+                    <li>Set a reasonable, competitive price</li>
+                    <li>Be responsive to buyer inquiries</li>
+                </ul>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i>
+                    List Item for Sale
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="form-sidebar">
+        <div class="sidebar-card">
+            <h3>💡 Selling Tips</h3>
+            <div class="tip-item">
+                <div class="tip-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <div class="tip-content">
+                    <h4>Great Photos</h4>
+                    <p>Take clear, well-lit photos from multiple angles</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="tip-content">
+                    <h4>Research Prices</h4>
+                    <p>Check similar items to price competitively</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="tip-content">
+                    <h4>Be Responsive</h4>
+                    <p>Reply quickly to buyer messages</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <h3>🛡️ Safety First</h3>
+            <ul class="safety-tips">
+                <li>Meet in public campus locations</li>
+                <li>Bring a friend if possible</li>
+                <li>Inspect items before purchasing</li>
+                <li>Trust your instincts</li>
+                <li>Report any suspicious activity</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

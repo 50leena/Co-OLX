@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <h1>Your Dashboard</h1>
+            <p>Manage your listings and track your activity</p>
+        </div>
+        <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            List New Item
+        </a>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ items|length }}</h3>
+                <p>Total Listings</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon sold">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ items|selectattr('sold')|list|length }}</h3>
+                <p>Items Sold</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon active">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ items|rejectattr('sold')|list|length }}</h3>
+                <p>Active Listings</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon revenue">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-info">
+                <h3>${{ "%.0f"|format(items|selectattr('sold')|sum(attribute='price')) }}</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your Listings -->
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h2>Your Listings</h2>
+            <p>Manage your active and sold items</p>
+        </div>
+
+        {% if items %}
+        <div class="listings-container">
+            {% for item in items %}
+            <div class="listing-card {% if item.sold %}sold{% endif %}">
+                <div class="listing-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    {% if item.sold %}
+                    <div class="sold-badge">SOLD</div>
+                    {% endif %}
+                </div>
+                
+                <div class="listing-content">
+                    <div class="listing-header">
+                        <h3 class="listing-title">{{ item.title }}</h3>
+                        <span class="listing-price">${{ "%.2f"|format(item.price) }}</span>
+                    </div>
+                    
+                    <p class="listing-description">{{ item.description[:100] }}{% if item.description|length > 100 %}...{% endif %}</p>
+                    
+                    <div class="listing-meta">
+                        <span class="listing-category">
+                            <i class="fas fa-tag"></i>
+                            {{ item.category|title }}
+                        </span>
+                        <span class="listing-date">
+                            <i class="fas fa-calendar"></i>
+                            {{ item.created_at.strftime('%b %d, %Y') }}
+                        </span>
+                    </div>
+                    
+                    <div class="listing-status">
+                        <span class="status-badge {% if item.sold %}status-sold{% else %}status-available{% endif %}">
+                            {% if item.sold %}
+                            <i class="fas fa-check"></i>
+                            Sold
+                            {% else %}
+                            <i class="fas fa-clock"></i>
+                            Available
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="listing-actions">
+                        {% if not item.sold %}
+                        <a href="{{ url_for('marketplace') }}" class="btn btn-outline btn-small">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('delete_item', item_id=item.id) }}" 
+                           class="btn btn-danger btn-small"
+                           onclick="return confirm('Are you sure you want to delete \"{{ item.title }}\"?')">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <h3>No Listings Yet</h3>
+            <p>You haven't listed any items for sale yet. Start by listing your first item!</p>
+            <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                List Your First Item
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="actions-grid">
+            <a href="{{ url_for('add_item') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h4>Add New Item</h4>
+                <p>List a new item for sale</p>
+            </a>
+            <a href="{{ url_for('marketplace') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h4>Browse Market</h4>
+                <p>Find items to buy</p>
+            </a>
+            <a href="#" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h4>Account Settings</h4>
+                <p>Manage your profile</p>
+            </a>
+            <a href="#" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h4>Get Help</h4>
+                <p>FAQ and support</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

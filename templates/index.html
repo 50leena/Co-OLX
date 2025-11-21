@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">
+                Buy & Sell Within Your 
+                <span class="gradient-text">Campus Community</span>
+            </h1>
+            <p class="hero-description">
+                Connect with fellow students to buy, sell, and trade items safely. 
+                From textbooks to electronics, find everything you need right here.
+            </p>
+            <div class="hero-actions">
+                {% if not session.user_id %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-rocket"></i>
+                    Get Started Free
+                </a>
+                <a href="{{ url_for('marketplace') }}" class="btn btn-secondary btn-large">
+                    <i class="fas fa-shopping-bag"></i>
+                    Browse Marketplace
+                </a>
+                {% else %}
+                <a href="{{ url_for('add_item') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-plus"></i>
+                    List an Item
+                </a>
+                <a href="{{ url_for('marketplace') }}" class="btn btn-secondary btn-large">
+                    <i class="fas fa-search"></i>
+                    Find Deals
+                </a>
+                {% endif %}
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Active Students</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">1,200+</span>
+                    <span class="stat-label">Items Listed</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Satisfaction Rate</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-card card-1">
+                <div class="card-content">
+                    <div class="item-image"></div>
+                    <h4>MacBook Pro</h4>
+                    <p class="price">$899</p>
+                </div>
+            </div>
+            <div class="floating-card card-2">
+                <div class="card-content">
+                    <div class="item-image"></div>
+                    <h4>Textbook Bundle</h4>
+                    <p class="price">$45</p>
+                </div>
+            </div>
+            <div class="floating-card card-3">
+                <div class="card-content">
+                    <div class="item-image"></div>
+                    <h4>Bicycle</h4>
+                    <p class="price">$120</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <div class="section-header">
+            <h2>Why Choose CampusMarket?</h2>
+            <p>Designed specifically for campus life</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Campus Verified</h3>
+                <p>All users are verified campus members ensuring a safe trading environment.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Instant Listings</h3>
+                <p>List your items in seconds and reach hundreds of potential buyers instantly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>Best Prices</h3>
+                <p>Get student-friendly prices and save money on everything you need.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                <h3>Eco-Friendly</h3>
+                <p>Reduce waste by buying and selling used items within your campus community.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Items Section -->
+<section class="recent-items">
+    <div class="container">
+        <div class="section-header">
+            <h2>Recently Listed Items</h2>
+            <p>Discover the latest additions to our marketplace</p>
+        </div>
+        
+        {% if items %}
+        <div class="items-grid">
+            {% for item in items %}
+            <div class="item-card">
+                <div class="item-badge">{{ item.category|title }}</div>
+                <div class="item-image-placeholder">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <div class="item-content">
+                    <h4 class="item-title">{{ item.title }}</h4>
+                    <p class="item-description">{{ item.description[:80] }}{% if item.description|length > 80 %}...{% endif %}</p>
+                    <div class="item-meta">
+                        <div class="item-price">${{ "%.2f"|format(item.price) }}</div>
+                        <div class="item-seller">
+                            <i class="fas fa-user"></i>
+                            {{ item.seller.username }}
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        {% if session.user_id and session.user_id != item.seller.id %}
+                        <a href="{{ url_for('buy_item', item_id=item.id) }}" class="btn btn-primary btn-small">
+                            <i class="fas fa-shopping-cart"></i>
+                            Buy Now
+                        </a>
+                        {% elif not session.user_id %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-small">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login to Buy
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('marketplace') }}" class="btn btn-outline btn-small">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="section-cta">
+            <a href="{{ url_for('marketplace') }}" class="btn btn-large btn-outline">
+                <i class="fas fa-arrow-right"></i>
+                View All Items
+            </a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <h3>No Items Yet</h3>
+            <p>Be the first to list an item in your campus marketplace!</p>
+            {% if session.user_id %}
+            <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                List Your First Item
+            </a>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i>
+                Join to Start Selling
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Trading?</h2>
+            <p>Join hundreds of students already buying and selling on CampusMarket</p>
+            {% if not session.user_id %}
+            <div class="cta-actions">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-user-plus"></i>
+                    Create Free Account
+                </a>
+                <a href="{{ url_for('marketplace') }}" class="btn btn-outline btn-large">
+                    <i class="fas fa-shopping-bag"></i>
+                    Browse as Guest
+                </a>
+            </div>
+            {% else %}
+            <div class="cta-actions">
+                <a href="{{ url_for('add_item') }}" class="btn btn-primary btn-large">
+                    <i class="fas fa-plus"></i>
+                    Add New Listing
+                </a>
+                <a href="{{ url_for('marketplace') }}" class="btn btn-outline btn-large">
+                    <i class="fas fa-compass"></i>
+                    Explore Marketplace
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

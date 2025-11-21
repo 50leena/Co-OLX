@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="marketplace">
+    <!-- Marketplace Header -->
+    <div class="marketplace-header">
+        <div class="header-content">
+            <h1>Campus Marketplace</h1>
+            <p>Discover amazing deals from your campus community</p>
+        </div>
+        <div class="header-actions">
+            {% if session.user_id %}
+            <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Sell Item
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="marketplace-filters">
+        <form method="GET" class="filters-form">
+            <div class="search-box">
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" placeholder="Search for items..." value="{{ search }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+
+            <div class="filter-options">
+                <div class="filter-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" onchange="this.form.submit()">
+                        <option value="all" {% if category == 'all' %}selected{% endif %}>All Categories</option>
+                        <option value="books" {% if category == 'books' %}selected{% endif %}>📚 Books & Textbooks</option>
+                        <option value="electronics" {% if category == 'electronics' %}selected{% endif %}>💻 Electronics</option>
+                        <option value="furniture" {% if category == 'furniture' %}selected{% endif %}>🛋️ Furniture</option>
+                        <option value="clothing" {% if category == 'clothing' %}selected{% endif %}>👕 Clothing</option>
+                        <option value="sports" {% if category == 'sports' %}selected{% endif %}>⚽ Sports</option>
+                        <option value="other" {% if category == 'other' %}selected{% endif %}>📦 Other</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <a href="{{ url_for('marketplace') }}" class="btn btn-outline">
+                        <i class="fas fa-refresh"></i>
+                        Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="results-summary">
+        <div class="summary-info">
+            <h3>{{ items|length }} Items Found</h3>
+            {% if search %}
+            <p>Search results for "{{ search }}"</p>
+            {% endif %}
+            {% if category != 'all' %}
+            <p>Category: {{ category|title }}</p>
+            {% endif %}
+        </div>
+        <div class="sort-options">
+            <select id="sort" onchange="sortItems(this.value)">
+                <option value="newest">Newest First</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Items Grid -->
+    {% if items %}
+    <div class="marketplace-grid" id="itemsGrid">
+        {% for item in items %}
+        <div class="marketplace-item" data-price="{{ item.price }}" data-date="{{ item.created_at.timestamp() }}">
+            <div class="item-card">
+                <div class="item-header">
+                    <span class="item-category">{{ item.category|title }}</span>
+                    <span class="item-date">{{ item.created_at.strftime('%b %d') }}</span>
+                </div>
+                
+                <div class="item-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                
+                <div class="item-content">
+                    <h3 class="item-title">{{ item.title }}</h3>
+                    <p class="item-description">{{ item.description[:120] }}{% if item.description|length > 120 %}...{% endif %}</p>
+                    
+                    <div class="item-meta">
+                        <div class="item-price">${{ "%.2f"|format(item.price) }}</div>
+                        <div class="item-seller">
+                            <i class="fas fa-user"></i>
+                            {{ item.seller.username }}
+                        </div>
+                    </div>
+                    
+                    <div class="item-actions">
+                        {% if session.user_id and session.user_id != item.seller.id %}
+                        <a href="{{ url_for('buy_item', item_id=item.id) }}" 
+                           class="btn btn-primary btn-full"
+                           onclick="return confirm('Buy {{ item.title }} for ${{ \"%.2f\"|format(item.price) }}?')">
+                            <i class="fas fa-shopping-cart"></i>
+                            Buy Now
+                        </a>
+                        {% elif session.user_id and session.user_id == item.seller.id %}
+                        <button class="btn btn-outline btn-full" disabled>
+                            <i class="fas fa-user"></i>
+                            Your Item
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login to Buy
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-marketplace">
+        <div class="empty-content">
+            <div class="empty-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>No Items Found</h3>
+            <p>We couldn't find any items matching your search criteria.</p>
+            <div class="empty-actions">
+                <a href="{{ url_for('marketplace') }}" class="btn btn-outline">
+                    <i class="fas fa-refresh"></i>
+                    Clear Filters
+                </a>
+                {% if session.user_id %}
+                <a href="{{ url_for('add_item') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    List an Item
+                </a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Join Our Community
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Categories Overview -->
+    <div class="categories-section">
+        <h3>Popular Categories</h3>
+        <div class="categories-grid">
+            <a href="{{ url_for('marketplace', category='books') }}" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h4>Books & Textbooks</h4>
+                <p>Course materials and reading books</p>
+            </a>
+            <a href="{{ url_for('marketplace', category='electronics') }}" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <h4>Electronics</h4>
+                <p>Laptops, phones, and gadgets</p>
+            </a>
+            <a href="{{ url_for('marketplace', category='furniture') }}" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-couch"></i>
+                </div>
+                <h4>Furniture</h4>
+                <p>Dorm and apartment essentials</p>
+            </a>
+            <a href="{{ url_for('marketplace', category='clothing') }}" class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <h4>Clothing</h4>
+                <p>Style on a student budget</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function sortItems(sortBy) {
+    const grid = document.getElementById('itemsGrid');
+    const items = Array.from(grid.getElementsByClassName('marketplace-item'));
+    
+    items.sort((a, b) => {
+        switch(sortBy) {
+            case 'price_low':
+                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            case 'price_high':
+                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            case 'newest':
+            default:
+                return parseFloat(b.dataset.date) - parseFloat(a.dataset.date);
+        }
+    });
+    
+    // Clear and re-append sorted items
+    grid.innerHTML = '';
+    items.forEach(item => grid.appendChild(item));
+}
+</script>
+{% endblock %}

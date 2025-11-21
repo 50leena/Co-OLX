@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-form">
+        <div class="auth-header">
+            <h2>Join CampusMarket</h2>
+            <p class="auth-subtitle">Start trading with your campus community</p>
+        </div>
+        
+        <form method="POST" class="auth-form-content">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" name="username" placeholder="Choose a username" required minlength="3" maxlength="20">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="your.email@campus.edu" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="Create a secure password" required minlength="6">
+                </div>
+            </div>
+            
+            <div class="form-terms">
+                <p>By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Sign in here</a></p>
+        </div>
+    </div>
+    
+    <div class="auth-features">
+        <div class="feature-highlight">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Campus Verified</h3>
+            <p>Join a trusted community of verified students</p>
+        </div>
+        <div class="feature-highlight">
+            <div class="feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Instant Access</h3>
+            <p>Start buying and selling immediately</p>
+        </div>
+        <div class="feature-highlight">
+            <div class="feature-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <h3>Save Money</h3>
+            <p>Get student-friendly prices on everything</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
